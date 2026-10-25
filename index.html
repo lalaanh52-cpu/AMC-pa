@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2A4A7F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Kho câu mẫu hồ sơ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root{color-scheme:light}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+</style>
+<style>
+/* Layout: sticky toolbar (search, category chips, column labels) over a two-column phrase table: Japanese left, Vietnamese right, whole cells are copy buttons. */
+:root {
+  --bg: #EEF1F4;
+  --surface: #FFFFFF;
+  --ink: #142033;
+  --muted: #5B6B7F;
+  --line: #D5DCE4;
+  --accent: #2A4A7F;
+  --accent-ink: #FFFFFF;
+  --stamp: #C8321F;
+  --flash: #E1EAF7;
+  --danger: #B3261E;
+  --font-ui: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-jp: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E141C; --surface: #161E29; --ink: #E6ECF3; --muted: #92A1B3; --line: #263242;
+    --accent: #8FB0E8; --accent-ink: #0E141C; --stamp: #F0705E; --flash: #1D2B42; --danger: #F2897F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E141C; --surface: #161E29; --ink: #E6ECF3; --muted: #92A1B3; --line: #263242;
+  --accent: #8FB0E8; --accent-ink: #0E141C; --stamp: #F0705E; --flash: #1D2B42; --danger: #F2897F;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 1080px; margin: 0 auto; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-top: 14px; }
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+.count { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.tools { display: flex; gap: 8px; margin-top: 10px; }
+.search { position: relative; flex: 1; min-width: 0; }
+.search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.search input {
+  width: 100%; height: 42px; padding: 0 12px 0 38px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface);
+}
+.btn {
+  height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface);
+  display: inline-flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap;
+}
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.small { height: 34px; padding: 0 12px; font-size: 13px; }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 0 2px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent;
+  font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px;
+}
+.chip b { font-weight: 500; font-variant-numeric: tabular-nums; opacity: .8; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.cols {
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 84px; gap: 0; margin-top: 8px;
+  padding: 8px 0 8px; border-bottom: 1px solid var(--line); font-size: 12px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase;
+}
+.cols span:first-child { padding-left: 14px; }
+.cols span:nth-child(2) { padding-left: 14px; }
+
+.panel { margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; margin-bottom: 12px; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; font-size: 13px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.fields { display: grid; grid-template-columns: 1.3fr 1fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field label { font-size: 12px; color: var(--muted); }
+.field input, .field textarea {
+  width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); resize: vertical;
+}
+.field textarea { min-height: 64px; }
+.field.jp textarea, .field.jp input { font-family: var(--font-jp); font-size: 16px; }
+.panel-foot { display: flex; align-items: flex-end; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.panel-foot .field { flex: 1; min-width: 180px; }
+.hint { font-size: 12.5px; color: var(--muted); margin: 0 0 8px; }
+
+.list { margin-top: 0; }
+.row {
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 84px; align-items: stretch;
+  border-bottom: 1px solid var(--line); background: transparent;
+}
+.cell {
+  position: relative; display: flex; align-items: flex-start; gap: 10px; text-align: left; width: 100%;
+  border: 0; background: transparent; padding: 12px 14px; min-width: 0;
+}
+.cell:hover { background: var(--flash); }
+.cell:active { background: var(--flash); }
+.jp .txt { font-family: var(--font-jp); font-size: 17px; line-height: 1.65; font-weight: 500; overflow-wrap: anywhere; }
+.vi { flex-direction: column; gap: 2px; padding-right: 48px; }
+.vi .txt { font-size: 14.5px; color: var(--ink); overflow-wrap: anywhere; }
+.vi .tag { font-size: 11.5px; color: var(--muted); }
+.mark { position: relative; flex: none; width: 26px; height: 26px; margin-top: 3px; display: grid; place-items: center; color: var(--muted); }
+.stamp {
+  display: none; place-items: center; width: 24px; height: 24px; border: 1.6px solid var(--stamp); color: var(--stamp);
+  border-radius: 5px; font-family: var(--font-jp); font-weight: 700; font-size: 14px; line-height: 1; transform: rotate(-7deg);
+  background: var(--surface);
+}
+.vi .stamp { position: absolute; right: 14px; top: 12px; }
+.row.done-jp .jp .ico { display: none; }
+.row.done-jp .jp .stamp { display: grid; }
+.row.done-vi .vi .stamp { display: grid; }
+.row.done-jp .jp, .row.done-vi .vi { background: var(--flash); }
+.jp:hover .ico { color: var(--accent); }
+.acts { display: flex; align-items: flex-start; justify-content: flex-end; gap: 2px; padding: 8px 8px 0 0; }
+.ib { width: 34px; height: 34px; display: grid; place-items: center; border: 0; background: transparent; color: var(--muted); border-radius: 8px; }
+.ib:hover { background: var(--flash); color: var(--ink); }
+.ib.confirm { width: auto; padding: 0 10px; color: #fff; background: var(--danger); font-size: 13px; font-weight: 600; }
+.edit { grid-column: 1 / -1; padding: 12px 14px 14px; background: var(--surface); }
+.edit .fields { margin-bottom: 10px; }
+.edit-foot { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+.edit-foot .field { flex: 1; min-width: 160px; }
+
+.empty { padding: 36px 8px; text-align: center; color: var(--muted); }
+.empty p { margin: 4px 0; text-wrap: balance; }
+.foot { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 12.5px; }
+.foot .grow { flex: 1; min-width: 160px; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 12px);
+  max-width: min(92vw, 420px); background: var(--ink); color: var(--bg); padding: 9px 14px; border-radius: 10px; font-size: 13.5px;
+  opacity: 0; pointer-events: none; transition: opacity .15s, transform .15s; z-index: 20; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+@media (max-width: 680px) {
+  .cols { display: none; }
+  .row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "jp jp" "vi acts"; }
+  .row .jp { grid-area: jp; padding-bottom: 4px; }
+  .row .vi { grid-area: vi; padding-top: 4px; padding-right: 44px; }
+  .row .acts { grid-area: acts; padding-top: 2px; align-items: center; }
+  .fields { grid-template-columns: 1fr; }
+  .btn .lbl { display: none; }
+  .btn { padding: 0 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <div class="head">
+      <h1>Kho câu mẫu hồ sơ</h1>
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+    <div class="tools">
+      <label class="search">
+        <span class="sr">Tìm câu hoặc từ</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Tìm bằng tiếng Nhật hoặc tiếng Việt (nhấn / để tìm nhanh)" autocomplete="off" spellcheck="false">
+      </label>
+      <button class="btn primary" id="toggleAdd" type="button" aria-expanded="false" aria-controls="addPanel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span class="lbl">Thêm câu</span>
+      </button>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Lọc theo nhóm"></div>
+    <div class="cols" aria-hidden="true"><span>日本語 · bấm để copy</span><span>Tiếng Việt · bấm để copy nghĩa</span><span></span></div>
+  </div>
+
+  <section class="panel" id="addPanel" hidden>
+    <div class="seg" role="group" aria-label="Cách thêm">
+      <button type="button" id="modeOne" aria-pressed="true">Thêm 1 câu</button>
+      <button type="button" id="modeMany" aria-pressed="false">Dán nhiều dòng</button>
+    </div>
+    <div id="oneBox">
+      <div class="fields">
+        <div class="field jp"><label for="addJp">Tiếng Nhật</label><textarea id="addJp" lang="ja" rows="2" placeholder="例：ご確認のほど、よろしくお願いいたします。"></textarea></div>
+        <div class="field"><label for="addVi">Nghĩa tiếng Việt</label><textarea id="addVi" rows="2" placeholder="Kính mong quý vị xác nhận giúp."></textarea></div>
+      </div>
+    </div>
+    <div id="manyBox" hidden>
+      <p class="hint">Mỗi dòng một câu, dạng <b>日本語 | Tiếng Việt</b>. Cũng dán được 2 cột copy từ Excel hoặc Google Sheets (cột 3 là nhóm, nếu có).</p>
+      <div class="field jp"><label for="addMany" class="sr">Nhiều dòng</label><textarea id="addMany" rows="6" placeholder="お世話になっております。 | Xin cảm ơn sự giúp đỡ của quý vị.&#10;添付をご確認ください。 | Xin hãy xem file đính kèm."></textarea></div>
+    </div>
+    <div class="panel-foot">
+      <div class="field"><label for="addCat">Nhóm</label><input id="addCat" list="catList" placeholder="Ví dụ: Mở đầu email" autocomplete="off"><datalist id="catList"></datalist></div>
+      <button class="btn primary" id="addGo" type="button">Thêm vào kho</button>
+    </div>
+  </section>
+
+  <div class="list" id="list"></div>
+
+  <div class="foot">
+    <span class="grow" id="status"></span>
+    <button class="btn small" id="exportTsv" type="button">Copy cả kho (dạng bảng)</button>
+    <button class="btn small" id="clearSamples" type="button" hidden>Xóa các câu mẫu</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var LS_KEY = "kho-cau-mau-v1";
+  var SAMPLE = [
+    ["Mở đầu email","いつもお世話になっております。","Xin cảm ơn quý vị đã luôn giúp đỡ chúng tôi."],
+    ["Mở đầu email","お世話になっております。","Xin cảm ơn sự giúp đỡ của quý vị."],
+    ["Mở đầu email","ご連絡ありがとうございます。","Cảm ơn quý vị đã liên lạc."],
+    ["Mở đầu email","お忙しいところ恐れ入りますが、","Xin lỗi đã làm phiền khi quý vị đang bận, nhưng"],
+    ["Mở đầu email","先日はありがとうございました。","Cảm ơn quý vị về hôm trước."],
+    ["Mở đầu email","○○送り出し機関の△△と申します。","Tôi là △△ của tổ chức phái cử ○○."],
+    ["Nhờ / yêu cầu","ご確認のほど、よろしくお願いいたします。","Kính mong quý vị xác nhận giúp."],
+    ["Nhờ / yêu cầu","ご査収のほど、よろしくお願いいたします。","Kính mong quý vị kiểm tra và nhận tài liệu đính kèm."],
+    ["Nhờ / yêu cầu","添付ファイルをご確認ください。","Xin hãy xem file đính kèm."],
+    ["Nhờ / yêu cầu","下記の書類を添付いたしますので、ご確認ください。","Tôi gửi kèm các hồ sơ dưới đây, xin quý vị kiểm tra."],
+    ["Nhờ / yêu cầu","お手数ですが、ご対応をお願いいたします。","Phiền quý vị xử lý giúp."],
+    ["Nhờ / yêu cầu","ご返信をお待ちしております。","Chúng tôi chờ phản hồi của quý vị."],
+    ["Nhờ / yêu cầu","進捗状況を教えていただけますでしょうか。","Quý vị có thể cho biết tiến độ được không ạ?"],
+    ["Nhờ / yêu cầu","日程のご都合をお知らせください。","Xin cho biết lịch phù hợp với quý vị."],
+    ["Hồ sơ","書類に不備がございましたので、修正の上、再提出をお願いいたします。","Hồ sơ có thiếu sót, xin sửa rồi nộp lại."],
+    ["Hồ sơ","提出期限は○月○日です。","Hạn nộp là ngày ○ tháng ○."],
+    ["Hồ sơ","書類が揃い次第、ご連絡いたします。","Khi hồ sơ đầy đủ, chúng tôi sẽ liên lạc."],
+    ["Hồ sơ","書類を郵送いたしました。","Chúng tôi đã gửi hồ sơ qua bưu điện."],
+    ["Hồ sơ","原本は後日郵送いたします。","Bản gốc sẽ được gửi qua bưu điện sau."],
+    ["Phỏng vấn","面接の日程についてご相談させてください。","Xin phép được trao đổi về lịch phỏng vấn."],
+    ["Phỏng vấn","面接の結果は合格でした。","Kết quả phỏng vấn là đỗ."],
+    ["Phỏng vấn","残念ながら、今回は不合格となりました。","Rất tiếc, lần này là không đỗ."],
+    ["Phỏng vấn","履歴書をご確認ください。","Xin kiểm tra sơ yếu lý lịch."],
+    ["Visa & nhập cảnh","在留資格認定証明書が届きましたのでご連絡いたします。","Chúng tôi xin thông báo đã nhận được giấy chứng nhận tư cách lưu trú (COE)."],
+    ["Visa & nhập cảnh","入国予定日は○月○日です。","Ngày dự kiến nhập cảnh là ngày ○ tháng ○."],
+    ["Visa & nhập cảnh","ビザの申請手続きを進めております。","Chúng tôi đang tiến hành thủ tục xin visa."],
+    ["Visa & nhập cảnh","パスポートの有効期限をご確認ください。","Xin kiểm tra thời hạn hộ chiếu."],
+    ["Xin lỗi / cảm ơn","返信が遅くなり、申し訳ございません。","Xin lỗi vì đã phản hồi muộn."],
+    ["Xin lỗi / cảm ơn","ご迷惑をおかけして申し訳ございません。","Xin lỗi vì đã gây phiền phức."],
+    ["Xin lỗi / cảm ơn","ご確認いただきありがとうございます。","Cảm ơn quý vị đã xác nhận."],
+    ["Xin lỗi / cảm ơn","ご対応いただき、誠にありがとうございます。","Chân thành cảm ơn quý vị đã xử lý."],
+    ["Kết thúc email","何かご不明な点がございましたら、お知らせください。","Nếu có điểm nào chưa rõ, xin cho chúng tôi biết."],
+    ["Kết thúc email","引き続きよろしくお願いいたします。","Mong tiếp tục nhận được sự giúp đỡ của quý vị."],
+    ["Kết thúc email","どうぞよろしくお願いいたします。","Rất mong nhận được sự giúp đỡ của quý vị."],
+    ["Kết thúc email","以上、よろしくお願いいたします。","Trên đây là toàn bộ, kính mong quý vị giúp đỡ."],
+    ["Từ vựng","技能実習生","Thực tập sinh kỹ năng"],
+    ["Từ vựng","特定技能","Kỹ năng đặc định"],
+    ["Từ vựng","送り出し機関","Tổ chức phái cử"],
+    ["Từ vựng","監理団体","Tổ chức giám sát"],
+    ["Từ vựng","受入企業","Công ty tiếp nhận"],
+    ["Từ vựng","在留カード","Thẻ cư trú"],
+    ["Từ vựng","健康診断書","Giấy khám sức khỏe"],
+    ["Từ vựng","履歴書","Sơ yếu lý lịch"],
+    ["Từ vựng","パスポート","Hộ chiếu"],
+    ["Từ vựng","不備","Thiếu sót (trong hồ sơ)"],
+    ["Từ vựng","再提出","Nộp lại"],
+    ["Từ vựng","提出期限","Hạn nộp"]
+  ];
+
+  var $ = function (s) { return document.querySelector(s); };
+  var items = [], ref = null, cat = "*", q = "", editingId = null, confirmId = null, confirmT = null;
+  var saveT = null, saving = false, dirty = false, toastT = null;
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function norm(s) { return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d"); }
+  function seed() { return SAMPLE.map(function (r) { return { id: uid(), cat: r[0], jp: r[1], vi: r[2], uses: 0, sample: true }; }); }
+
+  function loadLocal() {
+    try { var raw = localStorage.getItem(LS_KEY); if (raw) { var a = JSON.parse(raw); if (Array.isArray(a)) return a; } } catch (e) {}
+    return null;
+  }
+  function saveLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify(items)); } catch (e) {} }
+
+  function setStatus(kind) {
+    $("#status").textContent = kind === "db"
+      ? "Đã lưu vào tài khoản của bạn, dùng được trên máy khác."
+      : "Đang lưu trong trình duyệt này. Dùng nút “Copy cả kho” để sao lưu.";
+  }
+  function persist() {
+    saveLocal();
+    if (ref) { clearTimeout(saveT); saveT = setTimeout(flush, 500); }
+  }
+  function flush() {
+    saveT = null;
+    if (saving) { dirty = true; return; }
+    saving = true;
+    ref.set({ items: items }).then(function () { setStatus("db"); }, function () { setStatus("local"); }).then(function () {
+      saving = false;
+      if (dirty) { dirty = false; flush(); }
+    });
+  }
+
+  function cats() {
+    var m = {}, order = [];
+    items.forEach(function (i) { var c = i.cat || "Khác"; if (!(c in m)) { m[c] = 0; order.push(c); } m[c]++; });
+    return { map: m, order: order };
+  }
+
+  function renderChips() {
+    var c = cats(), top = items.filter(function (i) { return i.uses > 0; }).length;
+    var html = '<button type="button" class="chip" data-cat="*" aria-pressed="' + (cat === "*") + '">Tất cả <b>' + items.length + "</b></button>";
+    if (top) html += '<button type="button" class="chip" data-cat="__top" aria-pressed="' + (cat === "__top") + '">Hay dùng <b>' + top + "</b></button>";
+    c.order.forEach(function (n) {
+      html += '<button type="button" class="chip" data-cat="' + esc(n) + '" aria-pressed="' + (cat === n) + '">' + esc(n) + " <b>" + c.map[n] + "</b></button>";
+    });
+    $("#chips").innerHTML = html;
+    $("#catList").innerHTML = c.order.map(function (n) { return '<option value="' + esc(n) + '">'; }).join("");
+    $("#clearSamples").hidden = !items.some(function (i) { return i.sample; });
+  }
+
+  function visible() {
+    var list = items.slice();
+    if (cat === "__top") list = list.filter(function (i) { return i.uses > 0; }).sort(function (a, b) { return b.uses - a.uses; });
+    else if (cat !== "*") list = list.filter(function (i) { return (i.cat || "Khác") === cat; });
+    if (q) {
+      var nq = norm(q);
+      list = list.filter(function (i) { return norm(i.jp + " " + i.vi + " " + (i.cat || "")).indexOf(nq) !== -1; });
+    }
+    return list;
+  }
+
+  var ICO_COPY = '<svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+  var ICO_EDIT = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+  var ICO_DEL = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg>';
+
+  function rowHtml(i) {
+    if (editingId === i.id) {
+      return '<div class="row" data-id="' + i.id + '"><form class="edit" data-form="edit"><div class="fields">' +
+        '<div class="field jp"><label for="eJp">Tiếng Nhật</label><textarea id="eJp" lang="ja" rows="2">' + esc(i.jp) + '</textarea></div>' +
+        '<div class="field"><label for="eVi">Nghĩa tiếng Việt</label><textarea id="eVi" rows="2">' + esc(i.vi) + '</textarea></div></div>' +
+        '<div class="edit-foot"><div class="field"><label for="eCat">Nhóm</label><input id="eCat" list="catList" value="' + esc(i.cat || "") + '" autocomplete="off"></div>' +
+        '<button class="btn primary small" type="submit">Lưu</button><button class="btn small" type="button" data-act="cancel">Hủy</button></div></form></div>';
+    }
+    var del = confirmId === i.id
+      ? '<button class="ib confirm" type="button" data-act="del">Xóa?</button>'
+      : '<button class="ib" type="button" data-act="del" aria-label="Xóa câu này">' + ICO_DEL + "</button>";
+    return '<div class="row" data-id="' + i.id + '">' +
+      '<button class="cell jp" type="button" data-act="cpjp" lang="ja" title="Copy tiếng Nhật"><span class="mark">' + ICO_COPY + '<span class="stamp" aria-hidden="true">済</span></span><span class="txt">' + esc(i.jp) + "</span></button>" +
+      '<button class="cell vi" type="button" data-act="cpvi" title="Copy nghĩa tiếng Việt"><span class="txt">' + esc(i.vi || "—") + "</span>" + (i.cat ? '<span class="tag">' + esc(i.cat) + "</span>" : "") + '<span class="stamp" aria-hidden="true">済</span></button>' +
+      '<div class="acts"><button class="ib" type="button" data-act="edit" aria-label="Sửa câu này">' + ICO_EDIT + "</button>" + del + "</div></div>";
+  }
+
+  function render() {
+    renderChips();
+    var list = visible();
+    $("#count").textContent = list.length + (list.length === items.length ? " câu" : " / " + items.length + " câu");
+    if (!list.length) {
+      $("#list").innerHTML = items.length
+        ? '<div class="empty"><p>Không có câu nào khớp.</p><p>Thử từ khóa khác hoặc chọn “Tất cả”.</p></div>'
+        : '<div class="empty"><p>Kho đang trống.</p><p>Bấm “Thêm câu” để lưu câu đầu tiên, hoặc dán nhiều dòng một lúc.</p></div>';
+      return;
+    }
+    $("#list").innerHTML = list.map(rowHtml).join("");
+  }
+
+  function toast(msg) {
+    var t = $("#toast"); t.textContent = msg; t.classList.add("on");
+    clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove("on"); }, 1400);
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta); return ok;
+  }
+  function copyText(text) {
+    var p;
+    try { p = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(text) : Promise.reject(); } catch (e) { p = Promise.reject(); }
+    return p.then(function () { return true; }, function () { return fallbackCopy(text); });
+  }
+
+  function onCopy(rowEl, id, which) {
+    var it = items.filter(function (x) { return x.id === id; })[0]; if (!it) return;
+    var text = which === "jp" ? it.jp : it.vi; if (!text) return;
+    copyText(text).then(function (ok) {
+      if (!ok) { toast("Không copy được, hãy thử lại"); return; }
+      rowEl.classList.remove("done-jp", "done-vi");
+      void rowEl.offsetWidth;
+      rowEl.classList.add(which === "jp" ? "done-jp" : "done-vi");
+      setTimeout(function () { rowEl.classList.remove("done-jp", "done-vi"); }, 1300);
+      var short = text.length > 26 ? text.slice(0, 26) + "…" : text;
+      toast("Đã copy: " + short);
+      it.uses = (it.uses || 0) + 1;
+      persist();
+    });
+  }
+
+  $("#list").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act]"); if (!b) return;
+    var row = b.closest(".row"); var id = row && row.getAttribute("data-id"); var act = b.getAttribute("data-act");
+    if (act === "cpjp") return onCopy(row, id, "jp");
+    if (act === "cpvi") return onCopy(row, id, "vi");
+    if (act === "edit") { editingId = id; confirmId = null; render(); var f = $("#eJp"); if (f) f.focus(); return; }
+    if (act === "cancel") { editingId = null; render(); return; }
+    if (act === "del") {
+      if (confirmId === id) { items = items.filter(function (x) { return x.id !== id; }); confirmId = null; persist(); render(); toast("Đã xóa"); }
+      else { confirmId = id; clearTimeout(confirmT); confirmT = setTimeout(function () { confirmId = null; render(); }, 3000); render(); }
+    }
+  });
+  $("#list").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var row = e.target.closest(".row"); var id = row.getAttribute("data-id");
+    var it = items.filter(function (x) { return x.id === id; })[0]; if (!it) return;
+    var jp = $("#eJp").value.trim(); if (!jp) { $("#eJp").focus(); return; }
+    it.jp = jp; it.vi = $("#eVi").value.trim(); it.cat = $("#eCat").value.trim(); it.sample = false;
+    editingId = null; persist(); render(); toast("Đã lưu");
+  });
+  $("#chips").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cat]"); if (!b) return; cat = b.getAttribute("data-cat"); render();
+  });
+  $("#q").addEventListener("input", function (e) { q = e.target.value.trim(); render(); });
+  document.addEventListener("keydown", function (e) {
+    var t = e.target, typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT");
+    if (e.key === "/" && !typing && !e.ctrlKey && !e.metaKey) { e.preventDefault(); $("#q").focus(); $("#q").select(); }
+    if (e.key === "Escape" && t === $("#q")) { $("#q").value = ""; q = ""; render(); $("#q").blur(); }
+  });
+
+  /* add panel */
+  var mode = "one";
+  function setMode(m) {
+    mode = m;
+    $("#modeOne").setAttribute("aria-pressed", m === "one"); $("#modeMany").setAttribute("aria-pressed", m === "many");
+    $("#oneBox").hidden = m !== "one"; $("#manyBox").hidden = m !== "many";
+  }
+  $("#toggleAdd").addEventListener("click", function () {
+    var p = $("#addPanel"); p.hidden = !p.hidden;
+    $("#toggleAdd").setAttribute("aria-expanded", String(!p.hidden));
+    if (!p.hidden) { var f = mode === "one" ? $("#addJp") : $("#addMany"); f.focus(); }
+  });
+  $("#modeOne").addEventListener("click", function () { setMode("one"); $("#addJp").focus(); });
+  $("#modeMany").addEventListener("click", function () { setMode("many"); $("#addMany").focus(); });
+
+  function addOne() {
+    var jp = $("#addJp").value.trim(); if (!jp) { $("#addJp").focus(); return; }
+    items.unshift({ id: uid(), jp: jp, vi: $("#addVi").value.trim(), cat: $("#addCat").value.trim(), uses: 0 });
+    $("#addJp").value = ""; $("#addVi").value = ""; persist(); render(); toast("Đã thêm vào kho"); $("#addJp").focus();
+  }
+  function addMany() {
+    var lines = $("#addMany").value.split(/\r?\n/), c = $("#addCat").value.trim(), n = 0, add = [];
+    lines.forEach(function (ln) {
+      if (!ln.trim()) return;
+      var parts = ln.indexOf("\t") !== -1 ? ln.split("\t") : ln.split("|");
+      var jp = (parts[0] || "").trim(); if (!jp) return;
+      add.push({ id: uid(), jp: jp, vi: (parts[1] || "").trim(), cat: (parts[2] || "").trim() || c, uses: 0 }); n++;
+    });
+    if (!n) { toast("Chưa có dòng nào hợp lệ"); return; }
+    items = add.concat(items); $("#addMany").value = ""; persist(); render(); toast("Đã thêm " + n + " câu");
+  }
+  $("#addGo").addEventListener("click", function () { mode === "one" ? addOne() : addMany(); });
+  $("#addVi").addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); addOne(); } });
+  $("#addJp").addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#addVi").focus(); } });
+
+  /* footer */
+  $("#exportTsv").addEventListener("click", function () {
+    var tsv = items.map(function (i) { return [i.jp, i.vi, i.cat || ""].join("\t").replace(/\r?\n/g, " "); }).join("\n");
+    copyText(tsv).then(function (ok) { toast(ok ? "Đã copy " + items.length + " dòng, dán vào Excel được" : "Không copy được"); });
+  });
+  var clearArmed = false, clearT = null;
+  $("#clearSamples").addEventListener("click", function () {
+    var b = $("#clearSamples");
+    if (!clearArmed) { clearArmed = true; b.textContent = "Bấm lần nữa để xóa mẫu"; clearT = setTimeout(function () { clearArmed = false; b.textContent = "Xóa các câu mẫu"; }, 3000); return; }
+    clearTimeout(clearT); clearArmed = false; b.textContent = "Xóa các câu mẫu";
+    items = items.filter(function (i) { return !i.sample; }); cat = "*"; persist(); render(); toast("Đã xóa câu mẫu");
+  });
+
+  /* sync with the account store when available */
+  function clone(a) { return a.map(function (x) { return Object.assign({}, x); }); }
+  function connect() {
+    if (!window.claude || !window.claude.use) return;
+    Promise.all([window.claude.use("db"), window.claude.use("user")]).then(function (r) {
+      var db = r[0], user = r[1]; if (!db || !user) return;
+      return user.id().then(function (id) {
+        if (!id) return;
+        var d = db.doc("data/users/" + id + "/bank");
+        return d.get().then(function (snap) {
+          var data = snap.exists ? snap.data() : null;
+          if (data && Array.isArray(data.items)) { items = clone(data.items); saveLocal(); }
+          else { return d.set({ items: items }); }
+        }).then(function () {
+          ref = d; setStatus("db"); render();
+          d.onSnapshot(function (snap) {
+            if (snap.metadata.hasPendingWrites || !snap.exists) return;
+            var arr = snap.data().items; if (!Array.isArray(arr)) return;
+            if (JSON.stringify(arr) === JSON.stringify(items)) return;
+            if (editingId || saving || saveT) return;
+            items = clone(arr); saveLocal(); render();
+          }, function () {});
+        });
+      });
+    }).catch(function () {});
+  }
+
+  var stored = loadLocal();
+  items = stored || seed();
+  if (!stored) saveLocal();
+  setStatus("local");
+  render();
+  connect();
+})();
+</script>
+</body>
+</html>
